@@ -103,10 +103,10 @@ app.get("/deleteUsers", async (req, res) => {
     let ageResult = allData.filter((userProfile) => {
       const dob = new Date(userProfile.dob);
       const age = new Date().getFullYear() - dob.getFullYear();
-      console.log(age);
+      //console.log(age);
       return age > 25;
     });
-    console.log(ageResult.dob);
+    //console.log(ageResult.dob);
     const deleteUserId = ageResult.map((deletingId) => deletingId.user_id);
     //console.log(deleteUserId,"delete status");
     res.json({ dataToDelete: ageResult });
@@ -115,6 +115,23 @@ app.get("/deleteUsers", async (req, res) => {
   } catch (error) {
     console.log("connection error", error);
     res.status(500).json({ error: "could not delete user" });
+  }
+});
+app.get("/average-data", async (req, res) => {
+  try {
+    let allprofileData = await userProfileModal.find({}, "dob");
+    const currentDate = new Date();
+    let TotleAge = allprofileData.reduce((acc, profileage) => {
+      const dob = new Date(profileage.dob);
+      const age = currentDate.getFullYear() - dob.getFullYear();
+      return acc + age;
+    }, 0);
+    //  console.log(TotleAge);
+    let Result = allprofileData.length ? TotleAge / allprofileData.length : 0;
+
+    res.status(200).json({Result});
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
